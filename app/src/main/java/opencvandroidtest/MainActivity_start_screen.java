@@ -34,6 +34,7 @@ import java.util.ArrayList;
 
 import com.example.joshuayoung.opencvandroidtest.R;
 
+import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
@@ -43,7 +44,24 @@ import org.opencv.core.Mat;
 
 public class MainActivity_start_screen extends Activity{
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    public Mat hist = new Mat();
+    public Mat hist;
+
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS: {
+                    Log.i("Tag", "OpenCV loaded successfully");
+                }
+                break;
+                default: {
+                    super.onManagerConnected(status);
+                }
+                break;
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i("Called", "called onCreate");
@@ -61,6 +79,13 @@ public class MainActivity_start_screen extends Activity{
     @Override
     public void onResume() {
         super.onResume();
+        if (!OpenCVLoader.initDebug()) {
+            Log.d("Tag", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_2_0, this, mLoaderCallback);
+        } else {
+            Log.d("Tag", "OpenCV library found inside package. Using it!");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
 
     }
 
@@ -85,19 +110,21 @@ public class MainActivity_start_screen extends Activity{
     }
 
     protected void continueButton(View v) {
-        //go to next view
+        //go to next view\
+        long addr = hist.getNativeObjAddr();
 
         Intent intent = new Intent(this, MainActivity_show_camera.class);
-        ArrayList<Integer> imageInt = new ArrayList<Integer>();
-        org.opencv.utils.Converters.Mat_to_vector_int(hist, imageInt);
-        intent.putExtra("histOrig", imageInt);
-        this.startActivity(intent);
+       // ArrayList<Integer> imageInt = new ArrayList<>();
+    //    org.opencv.utils.Converters.Mat_to_vector_int(hist, imageInt);
+
+        intent.putExtra( "histO", addr );
+        startActivity( intent );
     }
 
     private void initialize(Bitmap imBitmap){
         OpenCVImage im = new OpenCVImage(imBitmap);
-        Mat h = im.hist;
-        hist = h;
+
+        hist = im.hist;
 
     }
 

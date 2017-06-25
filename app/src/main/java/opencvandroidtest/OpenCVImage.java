@@ -34,6 +34,8 @@ import org.opencv.android.Utils;
 
 
 public class OpenCVImage {
+
+
     public Mat hist = new Mat();
     public Mat image = new Mat();
 

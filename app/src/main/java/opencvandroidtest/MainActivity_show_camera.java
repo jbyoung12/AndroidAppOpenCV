@@ -79,9 +79,12 @@ public class MainActivity_show_camera extends AppCompatActivity implements CvCam
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        long addr = getIntent().getLongExtra("histO", 0);
+        Mat tempImg = new Mat( addr );
+        histOrig = tempImg.clone();
+
+
         //setContentView(R.layout.show_camera);
-        Bundle bundle = getIntent().getExtras();
-        histOrig = org.opencv.utils.Converters.vector_int_to_Mat((ArrayList<Integer>)bundle.getIntegerArrayList("histOrig"));
 
         setContentView(R.layout.show_camera);
 
